@@ -19,6 +19,12 @@ type Client struct {
 	Collection     *CollectionService
 }
 
+type TableParams struct {
+	Page      int
+	Order     string
+	Direction string
+}
+
 type Pagination struct {
 	CurrentPage int `json:"current_page"`
 	TotalPages  int `json:"total_pages"`
@@ -43,9 +49,25 @@ func NewClient(httpClient *http.Client) *Client {
 	return c
 }
 
+func (c *Client) IsAuthenticated() bool {
+	if c.BaseURL == nil {
+		return false
+	}
+
+	if c.Token == "" {
+		return false
+	}
+
+	return true
+}
+
 func (c *Client) SetURL(urlStr string) {
 	baseURL, _ := url.Parse(urlStr)
 	c.BaseURL = baseURL
+}
+
+func (c *Client) GetURL() string {
+	return c.BaseURL.String()
 }
 
 func (c *Client) NewRequest(method, path string, body interface{}) (
@@ -87,7 +109,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	}
 	response := &Response{Response: resp}
 
-	// TODO: Remove 'Bearer' part from token
+	// TODO: Remove 'Bearer' part from token?
 	response.Token = resp.Header.Get("Authorization")
 
 	defer resp.Body.Close()

@@ -20,7 +20,7 @@ type Collection struct {
 	Pagination *Pagination       `json:"pagination"`
 }
 
-func (s *CollectionService) UserCollection(pagination Pagination) (
+func (s *CollectionService) UserCollection(params TableParams) (
 	*Collection, *Response, error,
 ) {
 	req, err := s.client.NewRequest("GET", "/api/v1/collection", nil)
@@ -29,9 +29,9 @@ func (s *CollectionService) UserCollection(pagination Pagination) (
 		return nil, nil, err
 	}
 
-	if pagination.CurrentPage > 1 {
+	if params.Page > 1 {
 		query := req.URL.Query()
-		query.Add("page", strconv.Itoa(pagination.CurrentPage))
+		query.Add("page", strconv.Itoa(params.Page))
 		req.URL.RawQuery = query.Encode()
 	}
 
