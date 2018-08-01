@@ -63,12 +63,12 @@ func Loop(client *chest.Client) {
 	LoadSettings(client)
 
 	if client.IsAuthenticated() {
-		ShowCollection(app, client)
+		ShowHome(app, client)
 	} else {
 		Authenticate(app, client, func(_ *chest.User) {
 			StoreSettings(client)
 
-			ShowCollection(app, client)
+			ShowHome(app, client)
 		})
 	}
 

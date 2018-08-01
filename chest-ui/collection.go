@@ -8,7 +8,7 @@ import (
 	"github.com/rivo/tview"
 )
 
-func ShowCards(table *tview.Table, cards []*chest.CollectionCard) {
+func ListCards(table *tview.Table, cards []*chest.Card) {
 	color := tcell.ColorWhite
 
 	table.SetCell(0, 0,
@@ -44,7 +44,11 @@ func ShowCards(table *tview.Table, cards []*chest.CollectionCard) {
 	}
 }
 
-func ShowCollection(app *tview.Application, client *chest.Client) {
+func ShowCollection(
+	app *tview.Application,
+	client *chest.Client,
+	done func(),
+) {
 	table := tview.NewTable().
 		SetBorders(false)
 
@@ -54,11 +58,11 @@ func ShowCollection(app *tview.Application, client *chest.Client) {
 		panic(err)
 	}
 
-	ShowCards(table, collection.Cards)
+	ListCards(table, collection.Cards)
 
 	table.Select(0, 0).SetFixed(1, 0).SetDoneFunc(func(key tcell.Key) {
 		if key == tcell.KeyEscape {
-			app.Stop()
+			done()
 		}
 	}).SetSelectedFunc(func(row int, column int) {
 		// Navigation is done by pressing [ENTER], yup.
@@ -73,7 +77,7 @@ func ShowCollection(app *tview.Application, client *chest.Client) {
 			panic(err)
 		}
 
-		ShowCards(table, collection.Cards)
+		ListCards(table, collection.Cards)
 	})
 	table.SetSelectable(true, false)
 
